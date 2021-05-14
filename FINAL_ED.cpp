@@ -1,10 +1,10 @@
 #include<iostream>
-
+#include<stdlib.h>
 using namespace std;
 const int MAX_J=50,MAX_T=28;
 typedef  struct tnodo *pnodo;
 typedef struct Jugador {
-	string nombre; string apellido; string email;float puntaje;
+	string nombre; string apellido; string email;int puntaje;
 }jugador;
 typedef struct tnodo{
 	pnodo sig; 
@@ -15,17 +15,26 @@ typedef struct tlista{
 	pnodo i;
 }tlista;
 typedef  struct tcasilla *pcasilla;
+typedef struct casilla{
+	int dato;//numero de casilla en el tablero
+	string suceso;
+}casilla;
 typedef struct tcasilla{
-	pnodo sig; 
-	pnodo ant;
-	int dato;
+	pcasilla sig; 
+	pcasilla ant;
+	casilla dato;
 }tcasilla;
 typedef struct Tablero{
 	int cant;
-	pnodo i;
-	pnodo f;
+	pcasilla i;
+	pcasilla f;
 }Tablero;
-
+typedef struct tArbol *pArbol;
+typedef struct tArbol{
+	Jugador dato;
+	pArbol izq;
+	pArbol der;
+}tArbol;
 void iniciar_lista(tlista &jugadores){
 	jugadores.i=NULL;
 	jugadores.cant=0;
@@ -50,9 +59,7 @@ bool lista_vacia(tlista jugadores){
 }
 bool existe(tlista jugadores, string email){
 	pnodo p=jugadores.i; bool b=true;
-	for(p;p!=NULL;p=p->sig){
-		if(nombre==p->dato.nombre) b=false;
-	}
+	for(p;p!=NULL;p=p->sig)if(email==p->dato.email) b=false;
 	return b;
 }
 void consultar(tlista jugadores, string email){
@@ -68,7 +75,7 @@ void consultar(tlista jugadores, string email){
 			p=p->sig;
 		}
 	}
-	if(existe(jugadores,nombre)) cout<<"Ingreso Incorrecto. El Jugador NO existe "<<endl;
+	if(existe(jugadores,email)) cout<<"Ingreso Incorrecto. El Jugador NO existe "<<endl;
 }
 void modificar(string email,tlista &jugadores){
 	int r;pnodo p=jugadores.i; 
@@ -134,7 +141,7 @@ void registrar_J(tlista &jugadores){
 		cout<<"Nombre: ";cin>>nuevo->dato.nombre;cout<<endl;
 		cout<<"Apellido: ";cin>>nuevo->dato.apellido;cout<<endl;
 		cout<<"Email: ";cin>>nuevo->dato.email;cout<<endl;
-		cout<<"Puntaje = 0.0 ";nuevo->dato.puntaje=0.0;cout<<"  **El puntaje se inicializara en 0.0, como nuevo jugador. Gane mas punto jugando!"<<endl;
+		cout<<"Puntaje = 0 ";nuevo->dato.puntaje=0;cout<<"  **El puntaje se inicializara en 0.0, como nuevo jugador. Gane mas punto jugando!"<<endl;
 		nuevo->sig=NULL;
 		if(jugadores.i==NULL){
 				jugadores.i=nuevo; jugadores.cant++;	
@@ -205,35 +212,116 @@ void submenu(tlista &jugadores){
 void iniciar_partida(){
 	
 }
+
+void insertar(pArbol &bus, pArbol nuevo){
+	if(bus==NULL){
+		bus=nuevo;
+	}else{
+		if(bus->dato.puntaje > nuevo->dato.puntaje)insertar(bus->izq,nuevo);
+		else insertar(bus->der,nuevo);
+	}
+}
+void eliminar(tlista &j, string s){
+	pnodo sacado,p;
+	if(j.i==NULL){
+		sacado=NULL;
+	}else{
+		if(j.i->sig==NULL){
+			sacado=j.i;j.i=NULL;
+		}else{
+			if(j.i->dato.email==s){
+				sacado=j.i;j.i=sacado->sig;sacado->sig=NULL;
+			}else{
+				p=j.i;
+				while((p->sig)->dato.email!=s){
+				p=p->sig;
+				}
+				sacado=p->sig;p->sig=sacado->sig;sacado->sig=NULL;
+			}
+			
+		}
+	}
+}
+void buscar_mayor(tlista &jugadores, pArbol &bus){
+	pnodo p=new tnodo; int max=jugadores.i->dato.puntaje; pArbol nuevo= new tArbol;
+	while(p->sig!=NULL){
+		if((p->dato.puntaje) > max){
+			nuevo->dato.puntaje=p->dato.puntaje;
+			nuevo->dato.apellido=p->dato.apellido;
+			nuevo->dato.email= p->dato.email;
+			nuevo->dato.nombre=p->dato.nombre;
+			max=p->dato.puntaje;
+		}
+	}
+	eliminar(jugadores,nuevo->dato.email);
+	insertar(bus,nuevo);
+}
+
+void iniciar_arbol(pArbol a){
+	a->der=NULL;a->izq=NULL;a->dato.puntaje=0;
+}
+void mostrar(pArbol bus){
+	if(bus!=NULL){
+		cout<<"Nombre: "<<bus->dato.nombre<<"; Puntaje: "<<bus->dato.puntaje<<endl;
+		mostrar(bus->izq);mostrar(bus->der);
+	}
+}
 void ranking(tlista jugadores){
-     pnodo actual , siguiente;
-     float t; actual = jugadores.i;
-     while(actual->sig != NULL) {
-          siguiente = actual->sig;
-          while(siguiente!=NULL)
-          {
-               if(actual->dato.puntaje > siguiente->dato.puntaje){
-                    t = siguiente->dato.puntaje;
-                    siguiente->dato.puntaje = actual->dato.puntaje;
-                    actual->dato.puntaje = t;          
-               }
-               siguiente = siguiente->sig;                    
-          }    
-          actual = actual->sig;
-          siguiente = actual->sig;
-           
-     }
+   pArbol bus; pnodo p=jugadores.i; iniciar_arbol(bus);
+		for(p;p->sig!=NULL;p=p->sig){
+			pArbol nuevo= new tArbol; nuevo->dato.puntaje=p->dato.puntaje;
+			insertar(bus,nuevo);
+		}
+	tlista aux=jugadores; int i=0;
+	while(i<3){
+		 buscar_mayor(aux,bus);i++;
+	}
+	cout<<"Ranking: "<<endl;mostrar(bus);
 }
 pcasilla crear_casilla(pcasilla &nuevo,int cont){
 	nuevo=new tcasilla;
 	if(nuevo!=NULL){
-		nuevo.ant=NULL;
-		nuevo.sig=NULL;
-		nuevo.dato=cont+1;
+		nuevo->ant=NULL;
+		nuevo->sig=NULL;
+		nuevo->dato.dato=cont+1;
 	}
 	return nuevo;
 }
 
+Tablero asignacion(Tablero &tablero){
+	pcasilla aux=tablero.i;
+	tablero.f->dato.suceso="LUNA";
+	int c=rand() % 27 + 1;; int sucesos[10][1]; 
+	sucesos[0][0]=2;sucesos[0][1]=2;
+	sucesos[0][2]=3;sucesos[0][3]=3;sucesos[0][4]=3;
+	sucesos[0][5]=4;sucesos[0][6]=4;sucesos[0][7]=4;
+	sucesos[0][8]=5;sucesos[0][9]=5;sucesos[0][10]=5;
+	
+	sucesos[1][0]=0;sucesos[1][1]=0;
+	sucesos[1][2]=0;sucesos[1][3]=0;sucesos[1][4]=0;
+	sucesos[1][5]=0;sucesos[1][6]=0;sucesos[1][7]=0;
+	sucesos[1][8]=0;sucesos[1][9]=0;sucesos[1][10]=0;
+	for(int j=0;j<MAX_T;j++){
+		for(){
+			if(){
+				if(){
+					aux->dato.suceso="TORMETAS";
+					aux->ant.dato.suceso="TORMETAS";
+					aux->sig.dato.suceso="TORMETAS";
+					
+				}else{
+					
+				}
+			}
+		}
+				
+				c=rand() % 27 + 1;
+		}
+	}
+	
+	
+	return tablero;
+}
 void generar_t(Tablero &tablero){
 	for (int i=1; i<=MAX_T;i++){
 		pcasilla nuevo;nuevo=crear_casilla(nuevo,tablero.cant);
@@ -243,12 +331,12 @@ void generar_t(Tablero &tablero){
 			if(tablero.i==NULL && tablero.f==NULL){
 				tablero.i=nuevo;tablero.f=nuevo; 
 			}else{
-				nuevo.ant=tablero.f;
-				tablero.f->sig=nuevo;
+				nuevo->ant=tablero.f;
+				(tablero.f)->sig=nuevo;
 				tablero.f=nuevo;		
 			}
 			tablero.cant++;
-			
+			tablero=asignacion(tablero);
 		}
 		delete nuevo;
 	}
@@ -285,7 +373,7 @@ int main(){
 			}
 			
 			case 'd':{
-				ranking();
+				ranking(jugadores);
 				break;
 			}
 			case 'e':{
