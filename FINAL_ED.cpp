@@ -267,11 +267,7 @@ void mostrar(pArbol bus){
 	}
 }
 void ranking(tlista jugadores){
-   pArbol bus; pnodo p=jugadores.i; iniciar_arbol(bus);
-		for(p;p->sig!=NULL;p=p->sig){
-			pArbol nuevo= new tArbol; nuevo->dato.puntaje=p->dato.puntaje;
-			insertar(bus,nuevo);
-		}
+   pArbol bus; iniciar_arbol(bus);
 	tlista aux=jugadores; int i=0;
 	while(i<3){
 		 buscar_mayor(aux,bus);i++;
@@ -284,45 +280,69 @@ pcasilla crear_casilla(pcasilla &nuevo,int cont){
 		nuevo->ant=NULL;
 		nuevo->sig=NULL;
 		nuevo->dato.dato=cont+1;
+		nuevo->dato.suceso="";
 	}
 	return nuevo;
 }
 
-Tablero asignacion(Tablero &tablero){
-	pcasilla aux=tablero.i;
-	tablero.f->dato.suceso="LUNA";
-	int c=rand() % 27 + 1;; int sucesos[10][1]; 
-	sucesos[0][0]=2;sucesos[0][1]=2;
-	sucesos[0][2]=3;sucesos[0][3]=3;sucesos[0][4]=3;
-	sucesos[0][5]=4;sucesos[0][6]=4;sucesos[0][7]=4;
-	sucesos[0][8]=5;sucesos[0][9]=5;sucesos[0][10]=5;
-	
-	sucesos[1][0]=0;sucesos[1][1]=0;
-	sucesos[1][2]=0;sucesos[1][3]=0;sucesos[1][4]=0;
-	sucesos[1][5]=0;sucesos[1][6]=0;sucesos[1][7]=0;
-	sucesos[1][8]=0;sucesos[1][9]=0;sucesos[1][10]=0;
-	for(int j=0;j<MAX_T;j++){
-		for(){
-			if(){
-				if(){
-					aux->dato.suceso="TORMETAS";
-					aux->ant.dato.suceso="TORMETAS";
-					aux->sig.dato.suceso="TORMETAS";
-					
-				}else{
+void asignacion(Tablero &tablero){
+	pcasilla aux=tablero.i; Tablero t; iniciar_tablero(t);t=tablero; tablero.f->dato.suceso="LUNA";
+	int c=rand() % 27 + 1; int sucesos[3]; int i=rand() % 3 + 0;
+	for(int j=0;j<MAX_T-1;j++){
+			if(c==aux->dato.dato){
+				if(aux->dato.suceso==""){
+					if(sucesos[i]==0){
+						if(i==1){
+							aux->dato.suceso="TORMETAS";sucesos[i]++;
+							if(aux->ant.dato.suceso==""){
+								aux->ant.dato.suceso="TORMETAS";sucesos[i]++;
+								if(aux->sig.dato.suceso==""){
+									aux->sig.dato.suceso="TORMETAS";sucesos[i]++;
+								}
+							}	
+						}else{
+							if(i==2){
+								aux->dato.suceso="ALIENS";sucesos[i]=1;
+								if(aux->ant.dato.suceso==""){
+									aux->ant.dato.suceso="ALIENS";sucesos[i]++;
+									if(aux->sig.dato.suceso==""){
+										aux->sig.dato.suceso="ALIENS";sucesos[i]++; 
+									}
+								}
+							}else{
+								if(i==3){
+									aux->dato.suceso="ASTEROIDES";sucesos[i]++; 
+									if((aux->ant.dato.suceso==""){
+										aux->ant.dato.suceso="ASTEROIDES";sucesos[i]++; 
+										if(aux->sig.dato.suceso==""){
+											aux->sig.dato.suceso="ASTEROIDES";sucesos[i]++; 
+										}
+									}
+								}else{
+									if(i==0){
+										if((aux->ant.dato.suceso!="ESTRELLAS")||(aux->sig.dato.suceso!="ESTRELLAS")){
+											aux->dato.suceso="ESTRELLAS";sucesos[i]++;
+										}
+									}
+								}
+							}
+						}
+					}else{
+						if(sucesos[i]==1){
+							if(i==0){
+								if((aux->ant.dato.suceso!="ESTRELLAS")||(aux->sig.dato.suceso!="ESTRELLAS")){
+									aux->dato.suceso="ESTRELLAS";sucesos[i]++;
+								}
+							}
+						}
+					}
 					
 				}
 			}
+			c=rand() % 27 + 1;i=rand() % 3 + 0; aux=aux->sig;
 		}
-				
-				c=rand() % 27 + 1;
-		}
-	}
-	
-	
-	return tablero;
 }
-void generar_t(Tablero &tablero){
+void generar_t(Tablero &tablero, band &inicio){
 	for (int i=1; i<=MAX_T;i++){
 		pcasilla nuevo;nuevo=crear_casilla(nuevo,tablero.cant);
 		if(nuevo==NULL){
@@ -336,10 +356,11 @@ void generar_t(Tablero &tablero){
 				tablero.f=nuevo;		
 			}
 			tablero.cant++;
-			tablero=asignacion(tablero);
+			asignacion(tablero);
 		}
 		delete nuevo;
 	}
+	band=true;
 }
 void iniciar_tablero(Tablero &tablero){
 	tablero.i=NULL; tablero.cant=0; tablero.f=NULL;
@@ -352,7 +373,7 @@ void menu(){
 }
 int main(){
 	//system ("color 98" ); 
-	char op; tlista jugadores; iniciar_lista(jugadores);bool band=true; Tablero tablero; iniciar_tablero(tablero);
+	char op; tlista jugadores; iniciar_lista(jugadores);bool band=false; Tablero tablero; iniciar_tablero(tablero);
 	do{
 		menu();
 		cout<<endl; cout<<"Ingrese selecci\xA2n: ";cin>>op;cout<<endl;
@@ -363,12 +384,13 @@ int main(){
 			}
 			
 			case 'b':{
-				generar_t(tablero);
+				generar_t(tablero,band);
 				break;
 			}
 			
 			case 'c':{
-				iniciar_partida();
+				if(band && jugadores->cant>=2)iniciar_partida();
+				else cout<<" Para generar partida, debe generar un tablero y registrar como minimo 2 jugadores "<<endl
 				break;
 			}
 			
