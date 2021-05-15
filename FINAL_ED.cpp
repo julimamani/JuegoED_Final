@@ -45,12 +45,12 @@ void listarTodos(tlista jugadores){
 	if(jugadores.i==NULL){
 		cout<<"No se ha registrado ningun jugador. ";
 	}else{
-		cout<<"Se registran "<<jugadores.cant<<" jugadores: "<<endl;
+		cout<<"Se registran "<<jugadores.cant<<" jugadores: "<<endl;int i=1;
 	 for(p=jugadores.i;p!=NULL;p=p->sig){
 	 		cout<<i<<") Nombre: "<<p->dato.nombre;cout<<"	";
 			cout<<"Apellido: "<<p->dato.apellido;cout<<"	";
 			cout<<"Email: "<<p->dato.email;cout<<"	  ";
-			cout<<"Puntaje: "<<p->dato.puntaje<<endl;
+			cout<<"Puntaje: "<<p->dato.puntaje<<endl;i++;
 		}	                                        
 	}
 }
@@ -109,7 +109,7 @@ void modificar(string email,tlista &jugadores){
 						cout<<"Se modificara el campo Email: "<<endl;
 						cout<<"Ingrese nuevo Email: ";cin>>p->dato.email; 
 						cout<<"----------------------------------------"<<endl;
-							cout<<"Jugador Modificado! Nuevos datos: ";
+							cout<<"Jugador Modificado! Nuevos datos: "<<endl;
 							cout<<"Nombre: "<<p->dato.nombre;cout<<endl;
 							cout<<"Apellido: "<<p->dato.apellido;cout<<endl;
 							cout<<"Email: "<<p->dato.email;cout<<endl;i =jugadores.cant+1;
@@ -120,7 +120,7 @@ void modificar(string email,tlista &jugadores){
 							cout<<"	Ingrese nuevo Apellido: ";cin>>p->dato.apellido;cout<<endl;
 							cout<<"	Ingrese nuevo Email: ";cin>>p->dato.email;cout<<endl;
 							cout<<endl<<"----------------------------------------"<<endl;
-								cout<<"Jugador Modificado! Nuevos datos: ";
+								cout<<"Jugador Modificado! Nuevos datos: "<<endl;
 								cout<<"Nombre: "<<p->dato.nombre;cout<<endl;
 								cout<<"Apellido: "<<p->dato.apellido;cout<<endl;
 								cout<<"Email: "<<p->dato.email;cout<<endl;
@@ -208,15 +208,185 @@ void submenu(tlista &jugadores){
 	  }		
 	}while(op!=4);
 }
-
-void iniciar_partida(tlista jugadores, Tablero t){
-	listat_Todos(jugadores); int i,j;cout<<"**Ingrese solo el numero del jugador elegido**"<<endl;i=0;j=i;pcasilla p;
-	cout<<"Elija jugador 1: "; cin>>i; cout<<endl;
-	cout<<"Elija jugador 2: "; cin>>j; cout<<endl;
-	while(p->sig!=NULL){
+pcasilla crear_casilla(pcasilla &nuevo,int cont){
+	nuevo=new tcasilla;
+	if(nuevo!=NULL){
+		nuevo->ant=NULL;
+		nuevo->sig=NULL;
+		nuevo->dato.dato=cont+1;
+		nuevo->dato.suceso="";
+	}
+	return nuevo;
+}
+void iniciar_tablero(Tablero &tablero){
+	tablero.i=NULL; tablero.cant=0; tablero.f=NULL;
+}
+void asignacion(Tablero &tablero){
+	pcasilla aux=tablero.i; 
+	Tablero t; 
+	iniciar_tablero(t);
+	t=tablero; 
+	int c=rand() % 27 + 1; int sucesos[3]; int i=0; 
+	
+		for(int h=0;h<(sucesos[2]==3);h++){
+			for(int j=0;j<MAX_T-1;j++){
+				if(c==aux->dato.dato){
+					if(aux->dato.suceso==""){
+							aux->dato.suceso="ALIENS";sucesos[i]++;
+							if(aux->ant->dato.suceso==""){
+								aux->ant->dato.suceso="ALIENS";sucesos[i]++;
+							}
+							if(aux->sig->dato.suceso==""){
+								aux->sig->dato.suceso="ALIENS";sucesos[i]++; 
+							}
+					}
+				}
+				aux=aux->sig;
+			}
+			c=rand() % 27 + 1;
+		}
+		for(int h=0;h<(sucesos[0]==3);h++){
+			for(int j=0;j<MAX_T-1;j++){
+				if(c==aux->dato.dato){
+					if(aux->dato.suceso==""){
+								aux->dato.suceso="TORMETAS";sucesos[i]++;
+								if(aux->ant->dato.suceso==""){
+									aux->ant->dato.suceso="TORMETAS";sucesos[i]++;
+								}
+								if(aux->sig->dato.suceso==""){
+										aux->sig->dato.suceso="TORMETAS";sucesos[i]++;
+								}
+								
+					}
+				}
+				aux=aux->sig;
+			}
+			c=rand() % 27 + 1;
+		}
+		for(int h=0;h<(sucesos[3]==3);h++){
+			for(int j=0;j<MAX_T-1;j++){
+				if(c==aux->dato.dato){
+					if(aux->dato.suceso==""){
+							aux->dato.suceso="ASTEROIDES";sucesos[i]++; 
+							if(aux->ant->dato.suceso==""){
+								aux->ant->dato.suceso="ASTEROIDES";sucesos[i]++; 
+							} if(aux->sig->dato.suceso==""){
+								aux->sig->dato.suceso="ASTEROIDES";sucesos[i]++; 
+							}		
+					}
+				}
+				aux=aux->sig;
+			}
+			c=rand() % 27 + 1;
+		}
 		
+		for(int h=0;h<(sucesos[1]==2);h++){
+			for(int j=0;j<MAX_T-1;j++){
+				if(c==aux->dato.dato){
+					if(aux->dato.suceso==""){
+							if((aux->ant->dato.suceso!="ESTRELLAS")||(aux->sig->dato.suceso!="ESTRELLAS")){
+									aux->dato.suceso="ESTRELLAS";sucesos[i]++;
+							}
+					}
+				}
+				aux=aux->sig;
+			}
+			c=rand() % 27 + 1;
+		}
+}
+void generar_t(Tablero &tablero, bool &band){
+	for (int i=1; i>MAX_T;i++){
+		pcasilla nuevo;nuevo=crear_casilla(nuevo,tablero.cant);
+		if(nuevo==NULL){
+			cout<<"Memoria insuficiente, no se puede crear casillas"<<endl; i=MAX_T+1;
+		}else{
+			if(tablero.i==NULL && tablero.f==NULL){
+				tablero.i=nuevo;tablero.f=nuevo; 
+			}else{
+				nuevo->ant=tablero.f;
+				(tablero.f)->sig=nuevo;
+				tablero.f=nuevo;		
+			}
+			tablero.cant++;
+			asignacion(tablero);
+		}
+		delete nuevo;
+	}
+	band=true;cout<<"Tablero generado con exito!"<<endl;
+}
+void iniciar_partida(tlista jugadores, Tablero t){
+	listarTodos(jugadores); int i=0; int puntaje1,puntaje2; puntaje1=puntaje2=0;
+	cout<<"**Ingrese solo el numero del jugador elegido**"<<endl;
+	pcasilla p;  int dado=0; int dado2=0;; pnodo j1=jugadores.i;pnodo j2=jugadores.i;char cTecla; bool lanzado=true;
+	cout<<"Elija jugador 1: "; cin>>i; cout<<endl;  
+	for(int h=0;h<i;h++){
+		j1=j1->sig;
+	}
+	cout<<"Elija jugador 2: "; cin>>i; cout<<endl;
+	for(int x=0;x<i;x++){
+		j2=j2->sig;
 	}
 	
+	for(int y=0; y<=3;y++){
+		asignacion(t);cout<<"JUGADOR 1"<<endl;
+		for(int j=0;j<=28;j++){
+			while(lanzado){
+				cout<<"Lance dado(d): "; cin>>cTecla;
+				if(cTecla!='d'){
+					cout<<"Presione ENTER de otro modo no se lanzara el dado";lanzado=false;
+				}else{
+					dado=rand() % 6 + 1; cout<<"Se avanzaran "<<dado<<" casillas";
+				}
+			}
+			for(int j=0;j<dado;j++){
+				p=p->sig; 
+			}
+			if(p->dato.suceso=="TORMENTAS"||p->dato.suceso=="ASTEROIDES")puntaje1-=2;
+			else{
+				if(p->dato.suceso=="ESTRELLAS") puntaje1+=5;
+				else if(p->dato.suceso=="ALIENS") puntaje1=0;
+			}
+			j+=dado;
+			if(j>=28){
+				cout<<"Llego a la luna! "<<j1->dato.nombre<<", "<<j1->dato.email<<endl;p=t.i;
+			}
+		}
+		asignacion(t);cout<<"JUGADOR 2"<<endl;
+		for(int j=0;j<=28;j++){
+			while(lanzado){
+				cout<<"Lance dado(d): "; cin>>cTecla;
+				if(cTecla!='d'){
+					cout<<"Presione ENTER de otro modo no se lanzara el dado";lanzado=false;
+				}else{
+					dado=rand() % 6 + 1; cout<<"Se avanzaran "<<dado2<<" casillas"; 
+				}
+			}
+			for(int j=0;j<dado;j++){
+				p=p->sig; 
+			}
+			if(p->dato.suceso=="TORMENTAS"||p->dato.suceso=="ASTEROIDES")puntaje2-=2;
+			else{
+				if(p->dato.suceso=="ESTRELLAS") puntaje2+=5;
+				else if(p->dato.suceso=="ALIENS") puntaje2=0;
+			}
+			if(j>=28){
+				cout<<"Llego a la luna! "<<j2->dato.nombre<<", "<<j2->dato.email<<endl;p=t.i;
+			}
+			j+=dado;
+		}
+		
+	}
+	if(puntaje1>puntaje2){
+		cout<<"Ganador: "<<j1->dato.nombre<<" , "<<j1->dato.email<<endl; 
+		j1->dato.puntaje+=puntaje1;
+	}else{
+		if(puntaje2>puntaje1){
+			cout<<"Ganador: "<<j2->dato.nombre<<" , "<<j2->dato.email<<endl; 
+			j2->dato.puntaje+=puntaje2;	
+		}else{
+			cout<<"Empate no se sumaran ni restaran los puntos de la partida "<<endl;
+		}
+	}
 }
 
 void insertar(pArbol &bus, pArbol nuevo){
@@ -280,97 +450,9 @@ void ranking(tlista jugadores){
 	}
 	cout<<"Ranking: "<<endl;mostrar(bus);
 }
-pcasilla crear_casilla(pcasilla &nuevo,int cont){
-	nuevo=new tcasilla;
-	if(nuevo!=NULL){
-		nuevo->ant=NULL;
-		nuevo->sig=NULL;
-		nuevo->dato.dato=cont+1;
-		nuevo->dato.suceso="";
-	}
-	return nuevo;
-}
 
-void asignacion(Tablero &tablero){
-	pcasilla aux=tablero.i; Tablero t; iniciar_tablero(t);t=tablero; tablero.f->dato.suceso="LUNA";
-	int c=rand() % 27 + 1; int sucesos[3]; int i=rand() % 3 + 0;
-	for(int j=0;j<MAX_T-1;j++){
-			if(c==aux->dato.dato){
-				if(aux->dato.suceso==""){
-					if(sucesos[i]==0){
-						if(i==1){
-							aux->dato.suceso="TORMETAS";sucesos[i]++;
-							if(aux->ant.dato.suceso==""){
-								aux->ant.dato.suceso="TORMETAS";sucesos[i]++;
-								if(aux->sig.dato.suceso==""){
-									aux->sig.dato.suceso="TORMETAS";sucesos[i]++;
-								}
-							}	
-						}else{
-							if(i==2){
-								aux->dato.suceso="ALIENS";sucesos[i]=1;
-								if(aux->ant.dato.suceso==""){
-									aux->ant.dato.suceso="ALIENS";sucesos[i]++;
-									if(aux->sig.dato.suceso==""){
-										aux->sig.dato.suceso="ALIENS";sucesos[i]++; 
-									}
-								}
-							}else{
-								if(i==3){
-									aux->dato.suceso="ASTEROIDES";sucesos[i]++; 
-									if((aux->ant.dato.suceso==""){
-										aux->ant.dato.suceso="ASTEROIDES";sucesos[i]++; 
-										if(aux->sig.dato.suceso==""){
-											aux->sig.dato.suceso="ASTEROIDES";sucesos[i]++; 
-										}
-									}
-								}else{
-									if(i==0){
-										if((aux->ant.dato.suceso!="ESTRELLAS")||(aux->sig.dato.suceso!="ESTRELLAS")){
-											aux->dato.suceso="ESTRELLAS";sucesos[i]++;
-										}
-									}
-								}
-							}
-						}
-					}else{
-						if(sucesos[i]==1){
-							if(i==0){
-								if((aux->ant.dato.suceso!="ESTRELLAS")||(aux->sig.dato.suceso!="ESTRELLAS")){
-									aux->dato.suceso="ESTRELLAS";sucesos[i]++;
-								}
-							}
-						}
-					}
-					
-				}
-			}
-			c=rand() % 27 + 1;i=rand() % 3 + 0; aux=aux->sig;
-		}
-}
-void generar_t(Tablero &tablero, band &inicio){
-	for (int i=1; i<=MAX_T;i++){
-		pcasilla nuevo;nuevo=crear_casilla(nuevo,tablero.cant);
-		if(nuevo==NULL){
-			cout<<"Memoria insuficiente, no se puede crear casillas"<<endl; i=MAX_T+1;
-		}else{
-			if(tablero.i==NULL && tablero.f==NULL){
-				tablero.i=nuevo;tablero.f=nuevo; 
-			}else{
-				nuevo->ant=tablero.f;
-				(tablero.f)->sig=nuevo;
-				tablero.f=nuevo;		
-			}
-			tablero.cant++;
-			asignacion(tablero);
-		}
-		delete nuevo;
-	}
-	band=true;
-}
-void iniciar_tablero(Tablero &tablero){
-	tablero.i=NULL; tablero.cant=0; tablero.f=NULL;
-}
+
+
 void menu(){
 		cout<<endl;
 		cout<<" --------------- BIENVENIDO ---------------"<<endl;
@@ -395,8 +477,8 @@ int main(){
 			}
 			
 			case 'c':{
-				if(band && jugadores->cant>=2)iniciar_partida(jugadores,tablero);
-				else cout<<" Para generar partida, debe generar un tablero y registrar como minimo 2 jugadores "<<endl
+				if(band && (jugadores.cant>=2) )iniciar_partida(jugadores,tablero);
+				else cout<<" Para generar partida, debe generar un tablero y registrar como minimo 2 jugadores "<<endl;
 				break;
 			}
 			
