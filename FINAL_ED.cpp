@@ -47,9 +47,9 @@ void listarTodos(tlista jugadores){
 	}else{
 		cout<<"Se registran "<<jugadores.cant<<" jugadores: "<<endl;
 	 for(p=jugadores.i;p!=NULL;p=p->sig){
-	 	cout<<"Nombre: "<<p->dato.nombre;cout<<"	";
+	 		cout<<i<<") Nombre: "<<p->dato.nombre;cout<<"	";
 			cout<<"Apellido: "<<p->dato.apellido;cout<<"	";
-			cout<<"Email: "<<p->dato.email;cout<<"	";
+			cout<<"Email: "<<p->dato.email;cout<<"	  ";
 			cout<<"Puntaje: "<<p->dato.puntaje<<endl;
 		}	                                        
 	}
@@ -209,7 +209,13 @@ void submenu(tlista &jugadores){
 	}while(op!=4);
 }
 
-void iniciar_partida(){
+void iniciar_partida(tlista jugadores, Tablero t){
+	listat_Todos(jugadores); int i,j;cout<<"**Ingrese solo el numero del jugador elegido**"<<endl;i=0;j=i;pcasilla p;
+	cout<<"Elija jugador 1: "; cin>>i; cout<<endl;
+	cout<<"Elija jugador 2: "; cin>>j; cout<<endl;
+	while(p->sig!=NULL){
+		
+	}
 	
 }
 
@@ -389,7 +395,7 @@ int main(){
 			}
 			
 			case 'c':{
-				if(band && jugadores->cant>=2)iniciar_partida();
+				if(band && jugadores->cant>=2)iniciar_partida(jugadores,tablero);
 				else cout<<" Para generar partida, debe generar un tablero y registrar como minimo 2 jugadores "<<endl
 				break;
 			}
