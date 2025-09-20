@@ -1,34 +1,34 @@
 # README for Player Management and Game Board System
 
-Welcome to the **Player Management and Game Board System**! This project is a C++ application designed to manage players, generate a game board, and facilitate gameplay. Below, you'll find an overview of the project structure, features, and how to get started.
+## JuegoED_Final: A C++ Adventure with Data Structures
+Welcome to the JuegoED_Final repository! This is a text-based role-playing game (RPG) developed in C++ for a Data Structures course. Its main goal is to demonstrate the practical application of programming concepts and key data structures in creating a functional game system.
 
----
+## Project Overview
+This game immerses the player in a maze where they must explore, interact with characters, collect items, and solve puzzles to find the way out. The game's design is based on the implementation of key data structures, making it a solid proof of concept of my programming and logic skills.
 
-## Project Structure
+## Implemented Data Structures
+ The project is designed to function as a data structures lab. Each main game element is modeled using a specific structure to maximize efficiency and functionality.
 
-- **main.cpp**: The main C++ file that contains the core logic for player management, game board generation, and gameplay.
-- **Includes**: Standard libraries for input/output and memory management.
+* Graphs: The maze map is represented as an undirected graph, where each room is a node and the hallways are edges. This allows the player to move from one node to another and ensures the map is explorable.
 
----
+* Binary Search Trees (BST): The collectible items in the game are organized in a binary search tree. This optimizes inventory management and allows the system to find objects quickly and efficiently.
 
-## Features
+* Stacks: To provide the "go back" functionality, a stack is used. Each player's movement is saved to the stack, allowing them to undo actions and return to a previous room.
 
-- **Player Management**:
-  - Register players with their name, surname, email, and initial score.
-  - Consult and modify player information.
-  - List all registered players.
+* Queues: The logic for enemy turns is managed with a queue. Enemies are added to the queue and processed in a "first-in, first-out" (FIFO) order, ensuring a predictable and fair gameplay flow.
 
-- **Game Board Generation**:
-  - Create a game board with various events (e.g., "ALIENS", "TORMENTAS", "ASTEROIDES", "ESTRELLAS") that affect player scores.
+## Game Features
+* Maze Exploration: Navigate a complex maze represented by a graph.
 
-- **Gameplay**:
-  - Two players can compete against each other.
-  - Players roll a die to advance on the board and encounter events that can increase or decrease their scores.
-  - The game announces the winner based on the final scores.
+* Interaction: Talk to non-player characters (NPCs) to get clues or complete quests.
 
-- **Ranking System**:
-  - Display the top players based on their scores.
+* Inventory System: Collect and manage items organized in a BST.
 
+* Turn-Based Combat: Face enemies whose turns are managed via a queue.
+
+* Undo Movements: Use the stack to retrace your steps.
+
+Puzzle Solving: Use your logic and collected items to solve the final puzzle and escape the maze.
 ---
 
 ## Getting Started
